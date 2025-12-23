@@ -41,18 +41,6 @@
             letter-spacing: -0.5px;
         }
 
-        .success-message {
-            background: #d1e7dd;
-            color: #0f5132;
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: 1px solid #badbcc;
-        }
-
         .result-section {
             margin-bottom: 24px;
         }
@@ -143,16 +131,21 @@
         .btn-copy.copied:hover {
             background: #15803d;
         }
+
+        .title-link {
+            text-decoration: none;
+            color: #212529;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Your Short URL is Ready!</h1>
-        <div class="success-message">
-            Your URL has been successfully shortened
-        </div>
-
+        <a href="/" class="title-link"> 
+            <h1>
+                URL Shortener
+            </h1>
+        </a>
         <div class="result-section">
             <span class="label">Short URL</span>
             <div class="url-box short-url" id="shortUrl">{{.ShortURL}}</div>

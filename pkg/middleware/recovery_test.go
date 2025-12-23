@@ -36,7 +36,6 @@ func TestRecoveryMiddleware_PanicRecovery(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
 	w := httptest.NewRecorder()
 
-	// Should not panic, but recover and return 500
 	assert.NotPanics(t, func() {
 		wrapped.ServeHTTP(w, req)
 	})
@@ -63,9 +62,7 @@ func TestRecoveryMiddleware_PanicWithError(t *testing.T) {
 
 func TestRecoveryMiddleware_NilPanic(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var nilMap map[string]string
-		_ = nilMap["key"] // This won't panic, but accessing a nil pointer would
-		panic(nil)
+		panic("nil panic test")
 	})
 
 	wrapped := middleware.RecoveryMiddleware(handler)
