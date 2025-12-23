@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Short URL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 48px 40px;
+            max-width: 640px;
+            width: 100%;
+            border: 1px solid #e9ecef;
+        }
+
+        h1 {
+            color: #212529;
+            margin-bottom: 24px;
+            font-size: 1.75rem;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .success-message {
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #badbcc;
+        }
+
+        .result-section {
+            margin-bottom: 24px;
+        }
+
+        .label {
+            color: #495057;
+            font-size: 0.875rem;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .url-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px 20px;
+            word-break: break-all;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: #212529;
+            line-height: 1.5;
+        }
+
+        .short-url {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-copy {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-new {
+            background: white;
+            color: #495057;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-new:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-copy.copied {
+            background: #16a34a;
+        }
+
+        .btn-copy.copied:hover {
+            background: #15803d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Your Short URL is Ready!</h1>
+        <div class="success-message">
+            Your URL has been successfully shortened
+        </div>
+
+        <div class="result-section">
+            <span class="label">Short URL</span>
+            <div class="url-box short-url" id="shortUrl">{{.ShortURL}}</div>
+        </div>
+
+        <div class="result-section">
+            <span class="label">Original URL</span>
+            <div class="url-box">{{.LongURL}}</div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-copy" onclick="copyToClipboard()">Copy Short URL</button>
+            <button class="btn-new" onclick="window.location.href='/'">Create Another</button>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const shortUrl = document.getElementById('shortUrl').textContent;
+            const btn = event.target;
+
+            navigator.clipboard.writeText(shortUrl).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+    </script>
+</body>
+
+</html>
