@@ -78,13 +78,11 @@ func (r *MemoryURLRepository) cleanupExpired() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	now := time.Now()
 	for code, url := range r.urls {
 		if url.IsExpired() {
 			delete(r.urls, code)
 		}
 	}
-	_ = now
 }
 
 func (r *MemoryURLRepository) Close() {

@@ -70,6 +70,54 @@ func TestShortenerService_CreateShortURL(t *testing.T) {
 			},
 			expectedError: true,
 		},
+		{
+			name:    "retry on existing short code",
+			longURL: "https://example.com",
+			setupMocks: func(repo *MockURLRepository, gen *MockShortCodeGenerator) {
+				gen.On("Generate").Return("abc12345").Once()
+				gen.On("Generate").Return("xyz67890").Once()
+				repo.On("Exists", mock.Anything, "abc12345").Return(true, nil).Once()
+				repo.On("Exists", mock.Anything, "xyz67890").Return(false, nil).Once()
+				repo.On("Save", mock.Anything, mock.MatchedBy(func(url *domain.URL) bool {
+					return url.ShortCode == "xyz67890" && url.LongURL == "https://example.com"
+				})).Return(nil)
+			},
+			expectedError: false,
+		},
+		{
+			name:    "error checking existence",
+			longURL: "https://example.com",
+			setupMocks: func(repo *MockURLRepository, gen *MockShortCodeGenerator) {
+				gen.On("Generate").Return("abc12345")
+				repo.On("Exists", mock.Anything, "abc12345").Return(false, assert.AnError)
+			},
+			expectedError: true,
+		},
+		{
+			name:    "error saving URL",
+			longURL: "https://example.com",
+			setupMocks: func(repo *MockURLRepository, gen *MockShortCodeGenerator) {
+				gen.On("Generate").Return("abc12345")
+				repo.On("Exists", mock.Anything, "abc12345").Return(false, nil)
+				repo.On("Save", mock.Anything, mock.Anything).Return(assert.AnError)
+			},
+			expectedError: true,
+		},
+		{
+			name:    "max retries exceeded - all codes exist",
+			longURL: "https://example.com",
+			setupMocks: func(repo *MockURLRepository, gen *MockShortCodeGenerator) {
+				// Generate 5 codes, all exist
+				for i := 0; i < 5; i++ {
+					gen.On("Generate").Return("code" + string(rune('0'+i))).Once()
+					repo.On("Exists", mock.Anything, "code"+string(rune('0'+i))).Return(true, nil).Once()
+				}
+				// After max retries, it will still try to save with the last generated code
+				gen.On("Generate").Return("code4").Once()
+				repo.On("Save", mock.Anything, mock.Anything).Return(nil)
+			},
+			expectedError: false, // It will save with the last code even if it exists
+		},
 	}
 
 	for _, tt := range tests {

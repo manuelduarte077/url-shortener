@@ -5,8 +5,8 @@ import (
 	"url-shortener/pkg/observability"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
+	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -19,11 +19,11 @@ func TracingMiddleware(next http.Handler) http.Handler {
 		ctx, span := tracer.Start(ctx, r.Method+" "+r.URL.Path,
 			trace.WithSpanKind(trace.SpanKindServer),
 			trace.WithAttributes(
-				attribute.String("http.method", r.Method),
-				attribute.String("http.url", r.URL.String()),
-				attribute.String("http.scheme", r.URL.Scheme),
-				attribute.String("http.host", r.Host),
-				attribute.String("http.user_agent", r.UserAgent()),
+				semconv.HTTPRequestMethodOriginal(r.Method),
+				semconv.URLFull(r.URL.String()),
+				semconv.URLScheme(r.URL.Scheme),
+				semconv.ServerAddress(r.Host),
+				semconv.UserAgentOriginal(r.UserAgent()),
 			),
 		)
 		defer span.End()

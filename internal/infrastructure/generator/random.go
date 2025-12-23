@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ShortCodeLength = 4 // length of the generated short code
+	ShortCodeLength = 3 // length of the generated short code
 )
 
 type RandomShortCodeGenerator struct{}

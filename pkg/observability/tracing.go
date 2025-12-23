@@ -2,11 +2,14 @@ package observability
 
 import (
 	"context"
+	"net/url"
 	"os"
+	"strings"
+	"time"
 	"url-shortener/configs"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
@@ -19,12 +22,35 @@ var (
 )
 
 func InitTracing(cfg *configs.Config) (func(), error) {
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(getEnv("JAEGER_ENDPOINT", "http://localhost:14268/api/traces"))))
+	otlpEndpointStr := getEnv("OTLP_ENDPOINT", "localhost:4318")
+	ctx := context.Background()
+
+	endpoint := otlpEndpointStr
+	isInsecure := true
+
+	// If endpoint contains http:// or https://, parse it
+	if strings.HasPrefix(otlpEndpointStr, "http://") || strings.HasPrefix(otlpEndpointStr, "https://") {
+		parsedURL, err := url.Parse(otlpEndpointStr)
+		if err != nil {
+			return nil, err
+		}
+		endpoint = parsedURL.Host
+		isInsecure = parsedURL.Scheme == "http"
+	}
+
+	opts := []otlptracehttp.Option{
+		otlptracehttp.WithEndpoint(endpoint),
+	}
+	if isInsecure {
+		opts = append(opts, otlptracehttp.WithInsecure())
+	}
+
+	exp, err := otlptracehttp.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := resource.New(context.Background(),
+	res, err := resource.New(ctx,
 		resource.WithAttributes(
 			semconv.ServiceNameKey.String("url-shortener"),
 			semconv.ServiceVersionKey.String("1.0.0"),
@@ -49,7 +75,10 @@ func InitTracing(cfg *configs.Config) (func(), error) {
 	tracer = otel.Tracer("url-shortener")
 
 	return func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := tp.Shutdown(ctx); err != nil {
+			// log error but don't fail - this is cleanup
 		}
 	}, nil
 }

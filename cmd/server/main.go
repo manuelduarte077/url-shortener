@@ -24,7 +24,6 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	log.Println("Using in-memory storage (data will not persist between restarts)")
 	urlRepo := repository.NewMemoryURLRepository(cfg.Storage.TTL)
 	codeGenerator := generator.NewRandomShortCodeGenerator()
 	shortenerService := application.NewShortenerService(urlRepo, codeGenerator)
@@ -77,8 +76,6 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-
-	log.Println("Shutting down server...")
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
