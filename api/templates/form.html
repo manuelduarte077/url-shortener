@@ -14,39 +14,40 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f8f9fa;
+            background: #fafafa;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #2c2c2c;
         }
 
         .container {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
             padding: 48px 40px;
             max-width: 520px;
             width: 100%;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e0e0e0;
         }
 
         h1 {
-            color: #212529;
+            color: #2c2c2c;
             margin-bottom: 12px;
-            font-size: 2rem;
+            font-size: 1.5rem;
             text-align: center;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-weight: 400;
+            letter-spacing: 0;
         }
 
         .subtitle {
-            color: #6c757d;
+            color: #757575;
             text-align: center;
-            margin-bottom: 32px;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            margin-bottom: 40px;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            font-weight: 400;
         }
 
         form {
@@ -56,52 +57,45 @@
         }
 
         input[type="url"] {
-            padding: 16px 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.2s ease;
+            padding: 14px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 2px;
+            font-size: 0.875rem;
+            transition: border-color 0.15s ease;
             background: #fff;
-            color: #212529;
+            color: #2c2c2c;
+            font-family: inherit;
         }
 
         input[type="url"]:focus {
             outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #757575;
         }
 
         input[type="url"]::placeholder {
-            color: #adb5bd;
+            color: #b0b0b0;
         }
 
         button {
-            padding: 16px 20px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            padding: 14px 20px;
+            background: white;
+            color: #2c2c2c;
+            border: 1px solid #2c2c2c;
+            border-radius: 2px;
+            font-size: 0.875rem;
+            font-weight: 400;
             cursor: pointer;
-            transition: all 0.2s ease;
-            letter-spacing: 0.3px;
+            transition: background-color 0.15s ease, color 0.15s ease;
         }
 
         button:hover {
-            background: #1d4ed8;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+            background: #2c2c2c;
+            color: white;
         }
 
         button:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            border-color: #757575;
         }
     </style>
 </head>

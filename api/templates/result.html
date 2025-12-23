@@ -14,64 +14,64 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f8f9fa;
+            background: #fafafa;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #2c2c2c;
         }
 
         .container {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
             padding: 48px 40px;
             max-width: 640px;
             width: 100%;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e0e0e0;
         }
 
         h1 {
-            color: #212529;
-            margin-bottom: 24px;
-            font-size: 1.75rem;
+            color: #2c2c2c;
+            margin-bottom: 32px;
+            font-size: 1.5rem;
             text-align: center;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-weight: 400;
+            letter-spacing: 0;
         }
 
         .result-section {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .label {
-            color: #495057;
-            font-size: 0.875rem;
+            color: #757575;
+            font-size: 0.75rem;
             margin-bottom: 8px;
             display: block;
-            font-weight: 600;
+            font-weight: 400;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .url-box {
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            padding: 16px 20px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 2px;
+            padding: 14px 16px;
             word-break: break-all;
             font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
-            font-size: 0.95rem;
-            color: #212529;
-            line-height: 1.5;
+            font-size: 0.875rem;
+            color: #2c2c2c;
+            line-height: 1.6;
         }
 
         .short-url {
-            background: #2563eb;
-            color: white;
-            border-color: #2563eb;
-            font-weight: 600;
+            background: #f5f5f5;
+            color: #2c2c2c;
+            border-color: #d0d0d0;
+            font-weight: 500;
         }
 
         .actions {
@@ -82,59 +82,45 @@
 
         button {
             flex: 1;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
+            padding: 12px 20px;
+            border: 1px solid #d0d0d0;
+            border-radius: 2px;
+            font-size: 0.875rem;
+            font-weight: 400;
             cursor: pointer;
-            transition: all 0.2s ease;
-            letter-spacing: 0.3px;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+            background: white;
+            color: #2c2c2c;
         }
 
         .btn-copy {
-            background: #2563eb;
-            color: white;
+            border-color: #2c2c2c;
         }
 
         .btn-copy:hover {
-            background: #1d4ed8;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-new {
-            background: white;
-            color: #495057;
-            border: 2px solid #dee2e6;
+            background: #2c2c2c;
+            color: white;
         }
 
         .btn-new:hover {
-            background: #f8f9fa;
-            border-color: #adb5bd;
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: translateY(0);
+            background: #fafafa;
+            border-color: #b0b0b0;
         }
 
         button:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            border-color: #757575;
         }
 
         .btn-copy.copied {
-            background: #16a34a;
-        }
-
-        .btn-copy.copied:hover {
-            background: #15803d;
+            background: #2c2c2c;
+            color: white;
+            border-color: #2c2c2c;
         }
 
         .title-link {
             text-decoration: none;
-            color: #212529;
+            color: #2c2c2c;
         }
 
         .qrcode-container {
@@ -142,55 +128,48 @@
             flex-direction: column;
             align-items: center;
             padding: 24px;
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 2px;
         }
 
         .qrcode-image {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
             background: white;
-            padding: 12px;
+            padding: 16px;
             margin-bottom: 16px;
         }
 
         .btn-download {
-            background: #16a34a;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
+            background: white;
+            color: #2c2c2c;
+            padding: 10px 20px;
+            border: 1px solid #d0d0d0;
+            border-radius: 2px;
+            font-size: 0.875rem;
+            font-weight: 400;
             cursor: pointer;
-            transition: all 0.2s ease;
-            letter-spacing: 0.3px;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-download:hover {
-            background: #15803d;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
-        }
-
-        .btn-download:active {
-            transform: translateY(0);
+            background: #fafafa;
+            border-color: #b0b0b0;
         }
 
         .btn-download:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+            border-color: #757575;
         }
 
         .btn-download::before {
-            content: "⬇";
-            font-size: 1.1rem;
+            content: "↓";
+            font-size: 0.875rem;
         }
 
     </style>
@@ -234,7 +213,7 @@
 
             navigator.clipboard.writeText(shortUrl).then(() => {
                 const originalText = btn.textContent;
-                btn.textContent = 'Copied!';
+                btn.textContent = 'Copied';
                 btn.classList.add('copied');
 
                 setTimeout(() => {
@@ -251,11 +230,9 @@
             const qrImage = document.getElementById('qrcodeImage');
             const shortCode = '{{.ShortCode}}';
             
-            // Fetch the QR code image
             fetch('/qrcode/' + shortCode)
                 .then(response => response.blob())
                 .then(blob => {
-                    // Create a download link
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
