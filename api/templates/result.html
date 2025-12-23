@@ -136,6 +136,63 @@
             text-decoration: none;
             color: #212529;
         }
+
+        .qrcode-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .qrcode-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .btn-download {
+            background: #16a34a;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-download:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-download:active {
+            transform: translateY(0);
+        }
+
+        .btn-download:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+        }
+
+        .btn-download::before {
+            content: "⬇";
+            font-size: 1.1rem;
+        }
+
     </style>
 </head>
 
@@ -154,6 +211,14 @@
         <div class="result-section">
             <span class="label">Original URL</span>
             <div class="url-box">{{.LongURL}}</div>
+        </div>
+
+        <div class="result-section">
+            <span class="label">QR Code</span>
+            <div class="qrcode-container">
+                <img src="/qrcode/{{.ShortCode}}" alt="QR Code for {{.ShortURL}}" class="qrcode-image" id="qrcodeImage" />
+                <button class="btn-download" onclick="downloadQRCode()">Download QR Code</button>
+            </div>
         </div>
 
         <div class="actions">
@@ -180,6 +245,30 @@
                 console.error('Failed to copy:', err);
                 alert('Failed to copy to clipboard');
             });
+        }
+
+        function downloadQRCode() {
+            const qrImage = document.getElementById('qrcodeImage');
+            const shortCode = '{{.ShortCode}}';
+            
+            // Fetch the QR code image
+            fetch('/qrcode/' + shortCode)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Create a download link
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `qrcode-${shortCode}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(err => {
+                    console.error('Failed to download QR code:', err);
+                    alert('Failed to download QR code');
+                });
         }
     </script>
 </body>

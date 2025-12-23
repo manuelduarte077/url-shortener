@@ -86,4 +86,3 @@ func TestTracingMiddleware_ContextPropagation(t *testing.T) {
 	assert.Equal(t, "/test?param=value", capturedContext.URL.String())
 	assert.Equal(t, "test-agent", capturedContext.Header.Get("User-Agent"))
 }
-

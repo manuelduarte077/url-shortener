@@ -6,18 +6,22 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"url-shortener/internal/application"
+	"url-shortener/internal/infrastructure/qrcode"
 )
 
 type ShortenerHandler struct {
-	service *application.ShortenerService
-	tmpl    *template.Template
+	service     *application.ShortenerService
+	tmpl        *template.Template
+	qrGenerator *qrcode.QRCodeGenerator
 }
 
 func NewShortenerHandler(service *application.ShortenerService, tmpl *template.Template) *ShortenerHandler {
 	return &ShortenerHandler{
-		service: service,
-		tmpl:    tmpl,
+		service:     service,
+		tmpl:        tmpl,
+		qrGenerator: qrcode.NewQRCodeGenerator(),
 	}
 }
 
@@ -102,6 +106,50 @@ func (h *ShortenerHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, longURL, http.StatusMovedPermanently)
+}
+
+func (h *ShortenerHandler) GetQRCode(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract short code from path (e.g., /qrcode/abc123)
+	path := strings.TrimPrefix(r.URL.Path, "/qrcode/")
+	if path == "" {
+		http.Error(w, "Short code is required", http.StatusBadRequest)
+		return
+	}
+
+	// Get the long URL to verify it exists
+	ctx := r.Context()
+	_, err := h.service.GetLongURL(ctx, path)
+	if err != nil {
+		log.Printf("Error getting long URL for QR code: %v", err)
+		http.Error(w, "URL not found", http.StatusNotFound)
+		return
+	}
+
+	// Build the short URL
+	shortURL := h.buildShortURL(r, path)
+
+	// Generate QR code
+	pngData, err := h.qrGenerator.GeneratePNG(shortURL)
+	if err != nil {
+		log.Printf("Error generating QR code: %v", err)
+		http.Error(w, "Failed to generate QR code", http.StatusInternalServerError)
+		return
+	}
+
+	// Set headers for PNG image
+	w.Header().Set("Content-Type", "image/png")
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(pngData)))
+	w.Header().Set("Cache-Control", "public, max-age=3600") // Cache for 1 hour
+
+	// Write the image
+	if _, err := w.Write(pngData); err != nil {
+		log.Printf("Error writing QR code response: %v", err)
+	}
 }
 
 func (h *ShortenerHandler) buildShortURL(r *http.Request, shortCode string) string {

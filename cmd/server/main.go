@@ -44,6 +44,7 @@ func main() {
 		}
 	})
 	mux.HandleFunc("/shorten", shortenerHandler.CreateShortURL)
+	mux.HandleFunc("/qrcode/", shortenerHandler.GetQRCode)
 
 	cleanupTracing, err := observability.InitTracing(cfg)
 	if err != nil {
