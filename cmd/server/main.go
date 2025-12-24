@@ -12,7 +12,9 @@ import (
 	"url-shortener/api/handlers"
 	"url-shortener/configs"
 	"url-shortener/internal/application"
+	"url-shortener/internal/domain"
 	"url-shortener/internal/infrastructure/generator"
+	"url-shortener/internal/infrastructure/ratelimiter"
 	"url-shortener/internal/infrastructure/repository"
 	"url-shortener/pkg/middleware"
 	"url-shortener/pkg/observability"
@@ -53,9 +55,25 @@ func main() {
 		defer cleanupTracing()
 	}
 
-	handler := middleware.RecoveryMiddleware(
+	var rateLimiterInstance domain.RateLimiter
+	if cfg.RateLimiter.Enabled {
+		rateLimiterInstance = ratelimiter.NewMemoryRateLimiter(
+			cfg.RateLimiter.Limit,
+			cfg.RateLimiter.Window,
+		)
+		if memRL, ok := rateLimiterInstance.(*ratelimiter.MemoryRateLimiter); ok {
+			defer memRL.Close()
+		}
+		log.Printf("Rate limiting enabled: %d requests per %v", cfg.RateLimiter.Limit, cfg.RateLimiter.Window)
+	}
+
+	var handler http.Handler = mux
+	if cfg.RateLimiter.Enabled && rateLimiterInstance != nil {
+		handler = middleware.RateLimitingMiddleware(rateLimiterInstance)(handler)
+	}
+	handler = middleware.RecoveryMiddleware(
 		middleware.TracingMiddleware(
-			middleware.LoggingMiddleware(mux),
+			middleware.LoggingMiddleware(handler),
 		),
 	)
 

@@ -10,7 +10,6 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	// Save original env vars
 	originalPort := os.Getenv("SERVER_PORT")
 	originalReadTimeout := os.Getenv("SERVER_READ_TIMEOUT")
 	originalWriteTimeout := os.Getenv("SERVER_WRITE_TIMEOUT")
@@ -18,7 +17,6 @@ func TestLoad(t *testing.T) {
 	originalTTL := os.Getenv("STORAGE_TTL")
 	originalBaseURL := os.Getenv("APP_BASE_URL")
 
-	// Clean up after test
 	defer func() {
 		if originalPort != "" {
 			os.Setenv("SERVER_PORT", originalPort)
@@ -150,8 +148,6 @@ func TestGetEnv(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.setEnv()
-			// We can't directly test getEnv as it's unexported, but we test it through Load
-			// For direct testing, we'd need to export it or use reflection
 			cfg, err := configs.Load()
 			assert.NoError(t, err)
 			assert.NotNil(t, cfg)
@@ -236,6 +232,97 @@ func TestGetDurationEnv(t *testing.T) {
 					assert.Equal(t, 15*time.Second, cfg.Server.ReadTimeout)
 				}
 			}
+		})
+	}
+}
+
+func TestRateLimiterConfig(t *testing.T) {
+	originalEnabled := os.Getenv("RATE_LIMITER_ENABLED")
+	originalLimit := os.Getenv("RATE_LIMITER_LIMIT")
+	originalWindow := os.Getenv("RATE_LIMITER_WINDOW")
+
+	defer func() {
+		if originalEnabled != "" {
+			os.Setenv("RATE_LIMITER_ENABLED", originalEnabled)
+		} else {
+			os.Unsetenv("RATE_LIMITER_ENABLED")
+		}
+		if originalLimit != "" {
+			os.Setenv("RATE_LIMITER_LIMIT", originalLimit)
+		} else {
+			os.Unsetenv("RATE_LIMITER_LIMIT")
+		}
+		if originalWindow != "" {
+			os.Setenv("RATE_LIMITER_WINDOW", originalWindow)
+		} else {
+			os.Unsetenv("RATE_LIMITER_WINDOW")
+		}
+	}()
+
+	tests := []struct {
+		name            string
+		setupEnv        func()
+		expectedEnabled bool
+		expectedLimit   int
+		expectedWindow  time.Duration
+	}{
+		{
+			name: "default values",
+			setupEnv: func() {
+				os.Unsetenv("RATE_LIMITER_ENABLED")
+				os.Unsetenv("RATE_LIMITER_LIMIT")
+				os.Unsetenv("RATE_LIMITER_WINDOW")
+			},
+			expectedEnabled: true,
+			expectedLimit:   100,
+			expectedWindow:  1 * time.Minute,
+		},
+		{
+			name: "custom values from env",
+			setupEnv: func() {
+				os.Setenv("RATE_LIMITER_ENABLED", "true")
+				os.Setenv("RATE_LIMITER_LIMIT", "50")
+				os.Setenv("RATE_LIMITER_WINDOW", "30s")
+			},
+			expectedEnabled: true,
+			expectedLimit:   50,
+			expectedWindow:  30 * time.Second,
+		},
+		{
+			name: "disabled rate limiter",
+			setupEnv: func() {
+				os.Setenv("RATE_LIMITER_ENABLED", "false")
+				os.Setenv("RATE_LIMITER_LIMIT", "200")
+				os.Setenv("RATE_LIMITER_WINDOW", "2m")
+			},
+			expectedEnabled: false,
+			expectedLimit:   200,
+			expectedWindow:  2 * time.Minute,
+		},
+		{
+			name: "invalid bool uses default",
+			setupEnv: func() {
+				os.Setenv("RATE_LIMITER_ENABLED", "invalid")
+				os.Unsetenv("RATE_LIMITER_LIMIT")
+				os.Unsetenv("RATE_LIMITER_WINDOW")
+			},
+			expectedEnabled: true, // default
+			expectedLimit:   100,
+			expectedWindow:  1 * time.Minute,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.setupEnv()
+
+			cfg, err := configs.Load()
+
+			assert.NoError(t, err)
+			assert.NotNil(t, cfg)
+			assert.Equal(t, tt.expectedEnabled, cfg.RateLimiter.Enabled)
+			assert.Equal(t, tt.expectedLimit, cfg.RateLimiter.Limit)
+			assert.Equal(t, tt.expectedWindow, cfg.RateLimiter.Window)
 		})
 	}
 }

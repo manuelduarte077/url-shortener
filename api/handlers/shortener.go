@@ -114,14 +114,12 @@ func (h *ShortenerHandler) GetQRCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract short code from path (e.g., /qrcode/abc123)
 	path := strings.TrimPrefix(r.URL.Path, "/qrcode/")
 	if path == "" {
 		http.Error(w, "Short code is required", http.StatusBadRequest)
 		return
 	}
 
-	// Get the long URL to verify it exists
 	ctx := r.Context()
 	_, err := h.service.GetLongURL(ctx, path)
 	if err != nil {
@@ -130,10 +128,8 @@ func (h *ShortenerHandler) GetQRCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Build the short URL
 	shortURL := h.buildShortURL(r, path)
 
-	// Generate QR code
 	pngData, err := h.qrGenerator.GeneratePNG(shortURL)
 	if err != nil {
 		log.Printf("Error generating QR code: %v", err)
@@ -141,12 +137,10 @@ func (h *ShortenerHandler) GetQRCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set headers for PNG image
 	w.Header().Set("Content-Type", "image/png")
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(pngData)))
-	w.Header().Set("Cache-Control", "public, max-age=3600") // Cache for 1 hour
+	w.Header().Set("Cache-Control", "public, max-age=3600")
 
-	// Write the image
 	if _, err := w.Write(pngData); err != nil {
 		log.Printf("Error writing QR code response: %v", err)
 	}
