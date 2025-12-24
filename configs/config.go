@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	Server  ServerConfig
-	Storage StorageConfig
-	App     AppConfig
+	Server      ServerConfig
+	Storage     StorageConfig
+	App         AppConfig
+	RateLimiter RateLimiterConfig
 }
 
 type ServerConfig struct {
@@ -27,6 +28,12 @@ type AppConfig struct {
 	BaseURL string
 }
 
+type RateLimiterConfig struct {
+	Enabled bool
+	Limit   int
+	Window  time.Duration
+}
+
 func Load() (*Config, error) {
 	config := &Config{
 		Server: ServerConfig{
@@ -40,6 +47,11 @@ func Load() (*Config, error) {
 		},
 		App: AppConfig{
 			BaseURL: getEnv("APP_BASE_URL", "http://localhost:8181"),
+		},
+		RateLimiter: RateLimiterConfig{
+			Enabled: getBoolEnv("RATE_LIMITER_ENABLED", true),
+			Limit:   getIntEnv("RATE_LIMITER_LIMIT", 100),
+			Window:  getDurationEnv("RATE_LIMITER_WINDOW", 1*time.Minute),
 		},
 	}
 
@@ -66,6 +78,15 @@ func getDurationEnv(key string, defaultValue time.Duration) time.Duration {
 	if value := os.Getenv(key); value != "" {
 		if duration, err := time.ParseDuration(value); err == nil {
 			return duration
+		}
+	}
+	return defaultValue
+}
+
+func getBoolEnv(key string, defaultValue bool) bool {
+	if value := os.Getenv(key); value != "" {
+		if boolValue, err := strconv.ParseBool(value); err == nil {
+			return boolValue
 		}
 	}
 	return defaultValue
